@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  rmq0-hen: &rmq-hen
+    build: rmq-hen
+    environment:
+      - LOG=debug
+    hostname: rmq0-hen
+  rmq1-hen:
+    <<: *rmq-hen
+    hostname: rmq1-hen
+  rmq2-hen:
+    <<: *rmq-hen
+    hostname: rmq2-hen
+  haproxy-hen:
+    image: haproxy:latest
+    volumes:
+      - ./haproxy-hen.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - rmq0-hen
+      - rmq1-hen
+      - rmq2-hen
+    ports:
+      # HOST:CONTAINER
+      - 15672:15672
+      - 5672:5672
