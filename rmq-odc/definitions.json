@@ -1,8 +1,8 @@
 {
-  "rabbit_version": "3.9.15",
-  "rabbitmq_version": "3.9.15",
+  "rabbit_version": "3.11.19",
+  "rabbitmq_version": "3.11.19",
   "product_name": "RabbitMQ",
-  "product_version": "3.9.15",
+  "product_version": "3.11.19",
   "users": [
     {
       "name": "guest",
@@ -17,6 +17,9 @@
   "vhosts": [
     {
       "name": "/"
+    },
+    {
+      "name": "is-inventory"
     }
   ],
   "permissions": [
@@ -26,28 +29,91 @@
       "configure": ".*",
       "write": ".*",
       "read": ".*"
+    },
+    {
+      "user": "guest",
+      "vhost": "is-inventory",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
     }
   ],
   "topic_permissions": [],
-  "parameters": [],
+  "parameters": [
+    {
+      "value": {
+        "max-hops": 1,
+        "prefetch-count": 200,
+        "reconnect-delay": 10,
+        "trust-user-id": true,
+        "uri": "amqp://haproxy-hdc:5672/is-inventory?heartbeat=45&connection_timeout=15000"
+      },
+      "vhost": "is-inventory",
+      "component": "federation-upstream",
+      "name": "fed-henrietta"
+    },
+    {
+      "value": {
+        "max-hops": 1,
+        "prefetch-count": 200,
+        "reconnect-delay": 10,
+        "trust-user-id": true,
+        "uri": "amqp://haproxy-wdc:5672/is-inventory?heartbeat=45&connection_timeout=15000"
+      },
+      "vhost": "is-inventory",
+      "component": "federation-upstream",
+      "name": "fed-webster"
+    }
+  ],
   "global_parameters": [
   ],
   "policies": [
     {
-      "vhost": "/",
-      "name": "ha-all",
-      "pattern": ".*",
+      "vhost": "is-inventory",
+      "name": "quorumfedqueues",
+      "pattern": ".*-fed$",
       "apply-to": "queues",
       "definition": {
-        "ha-mode": "all"
+        "federation-upstream-set": "all",
+        "max-length": 1500000,
+        "max-length-bytes": 1050000000,
+        "queue-leader-locator": "balanced"
       },
-      "priority": 0
-    }
+      "priority": 25
+    },
   ],
   "queues": [
+    {
+      "name": "inventory-fed",
+      "vhost": "is-inventory",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "inventory-dlq",
+        "x-message-ttl": 86400000,
+        "x-queue-type": "quorum"
+      }
+    }
   ],
   "exchanges": [
+    {
+      "name": "inventory",
+      "vhost": "is-inventory",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
   ],
   "bindings": [
+    {
+      "source": "inventory",
+      "vhost": "is-inventory",
+      "destination": "inventory-fed",
+      "destination_type": "queue",
+      "routing_key": "#",
+      "arguments": {}
+    }
   ]
 }

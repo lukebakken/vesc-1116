@@ -50,7 +50,7 @@
       },
       "vhost": "is-inventory",
       "component": "federation-upstream",
-      "name": "fed-wdc"
+      "name": "fed-webster"
     },
     {
       "value": {
@@ -62,7 +62,7 @@
       },
       "vhost": "is-inventory",
       "component": "federation-upstream",
-      "name": "fed-odc"
+      "name": "fed-omaha"
     }
   ],
   "global_parameters": [
