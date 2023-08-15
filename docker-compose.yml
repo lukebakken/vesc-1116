@@ -1,15 +1,15 @@
 version: '3'
 
 services:
-  rmq0-hen: &rmq-hen
-    build: rmq-hen
-    hostname: rmq0-hen
-  rmq1-hen:
-    <<: *rmq-hen
-    hostname: rmq1-hen
-  rmq2-hen:
-    <<: *rmq-hen
-    hostname: rmq2-hen
+  rmq0-hdc: &rmq-hdc
+    build: rmq-hdc
+    hostname: rmq0-hdc
+  rmq1-hdc:
+    <<: *rmq-hdc
+    hostname: rmq1-hdc
+  rmq2-hdc:
+    <<: *rmq-hdc
+    hostname: rmq2-hdc
   rmq0-wdc: &rmq-wdc
     build: rmq-wdc
     hostname: rmq0-wdc
@@ -28,15 +28,15 @@ services:
   rmq2-odc:
     <<: *rmq-odc
     hostname: rmq2-odc
-  haproxy-hen:
+  haproxy-hdc:
     image: haproxy:latest
-    hostname: haproxy-hen
+    hostname: haproxy-hdc
     volumes:
-      - ./haproxy-hen.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./haproxy-hdc.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     depends_on:
-      - rmq0-hen
-      - rmq1-hen
-      - rmq2-hen
+      - rmq0-hdc
+      - rmq1-hdc
+      - rmq2-hdc
     ports:
       # HOST:CONTAINER
       - 15672:15672
