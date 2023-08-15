@@ -3,8 +3,6 @@ version: '3'
 services:
   rmq0-hen: &rmq-hen
     build: rmq-hen
-      # environment:
-      # - LOG=debug
     hostname: rmq0-hen
   rmq1-hen:
     <<: *rmq-hen
@@ -12,19 +10,27 @@ services:
   rmq2-hen:
     <<: *rmq-hen
     hostname: rmq2-hen
-  rmq0-web: &rmq-web
-    build: rmq-web
-      # environment:
-      # - LOG=debug
-    hostname: rmq0-web
-  rmq1-web:
-    <<: *rmq-web
-    hostname: rmq1-web
-  rmq2-web:
-    <<: *rmq-web
-    hostname: rmq2-web
+  rmq0-wdc: &rmq-wdc
+    build: rmq-wdc
+    hostname: rmq0-wdc
+  rmq1-wdc:
+    <<: *rmq-wdc
+    hostname: rmq1-wdc
+  rmq2-wdc:
+    <<: *rmq-wdc
+    hostname: rmq2-wdc
+  rmq0-odc: &rmq-odc
+    build: rmq-odc
+    hostname: rmq0-odc
+  rmq1-odc:
+    <<: *rmq-odc
+    hostname: rmq1-odc
+  rmq2-odc:
+    <<: *rmq-odc
+    hostname: rmq2-odc
   haproxy-hen:
     image: haproxy:latest
+    hostname: haproxy-hen
     volumes:
       - ./haproxy-hen.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     depends_on:
@@ -34,14 +40,27 @@ services:
     ports:
       # HOST:CONTAINER
       - 15672:15672
-  haproxy-web:
+  haproxy-wdc:
     image: haproxy:latest
+    hostname: haproxy-wdc
     volumes:
-      - ./haproxy-web.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./haproxy-wdc.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     depends_on:
-      - rmq0-web
-      - rmq1-web
-      - rmq2-web
+      - rmq0-wdc
+      - rmq1-wdc
+      - rmq2-wdc
     ports:
       # HOST:CONTAINER
       - 15673:15672
+  haproxy-odc:
+    image: haproxy:latest
+    hostname: haproxy-odc
+    volumes:
+      - ./haproxy-odc.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - rmq0-odc
+      - rmq1-odc
+      - rmq2-odc
+    ports:
+      # HOST:CONTAINER
+      - 15674:15672

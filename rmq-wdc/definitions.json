@@ -1,0 +1,119 @@
+{
+  "rabbit_version": "3.11.19",
+  "rabbitmq_version": "3.11.19",
+  "product_name": "RabbitMQ",
+  "product_version": "3.11.19",
+  "users": [
+    {
+      "name": "guest",
+      "password_hash": "AjmCZmeB0eEM306lz4Daj4XqKSMk/m+ey9s5lsnAUA73iWDT",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": [
+        "administrator"
+      ],
+      "limits": {}
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    },
+    {
+      "name": "is-inventory"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    },
+    {
+      "user": "guest",
+      "vhost": "is-inventory",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "topic_permissions": [],
+  "parameters": [
+    {
+      "value": {
+        "max-hops": 1,
+        "prefetch-count": 200,
+        "reconnect-delay": 10,
+        "trust-user-id": true,
+        "uri": "amqp://haproxy-hdc:5672/is-inventory?heartbeat=45&connection_timeout=15000"
+      },
+      "vhost": "is-inventory",
+      "component": "federation-upstream",
+      "name": "fed-henrietta"
+    },
+    {
+      "value": {
+        "max-hops": 1,
+        "prefetch-count": 200,
+        "reconnect-delay": 10,
+        "trust-user-id": true,
+        "uri": "amqp://haproxy-odc:5672/is-inventory?heartbeat=45&connection_timeout=15000"
+      },
+      "vhost": "is-inventory",
+      "component": "federation-upstream",
+      "name": "fed-omaha"
+    }
+  ],
+  "global_parameters": [
+  ],
+  "policies": [
+    {
+      "vhost": "is-inventory",
+      "name": "quorumfedqueues",
+      "pattern": ".*-fed$",
+      "apply-to": "queues",
+      "definition": {
+        "federation-upstream-set": "all",
+        "max-length": 1500000,
+        "max-length-bytes": 1050000000,
+        "queue-leader-locator": "balanced"
+      },
+      "priority": 25
+    },
+  ],
+  "queues": [
+    {
+      "name": "inventory-fed",
+      "vhost": "is-inventory",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "inventory-dlq",
+        "x-message-ttl": 86400000,
+        "x-queue-type": "quorum"
+      }
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "inventory",
+      "vhost": "is-inventory",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "inventory",
+      "vhost": "is-inventory",
+      "destination": "inventory-fed",
+      "destination_type": "queue",
+      "routing_key": "#",
+      "arguments": {}
+    }
+  ]
+}
