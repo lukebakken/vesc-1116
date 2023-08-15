@@ -93,11 +93,31 @@
         "x-message-ttl": 86400000,
         "x-queue-type": "quorum"
       }
+    },
+    {
+      "name": "inventory-dlq",
+      "vhost": "is-inventory",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 86400000,
+        "x-overflow": "drop-head",
+        "x-queue-type": "quorum"
+      }
     }
   ],
   "exchanges": [
     {
       "name": "inventory",
+      "vhost": "is-inventory",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "inventory-dlq",
       "vhost": "is-inventory",
       "type": "topic",
       "durable": true,
@@ -111,6 +131,14 @@
       "source": "inventory",
       "vhost": "is-inventory",
       "destination": "inventory-fed",
+      "destination_type": "queue",
+      "routing_key": "#",
+      "arguments": {}
+    },
+    {
+      "source": "inventory-dlq",
+      "vhost": "is-inventory",
+      "destination": "inventory-dlq",
       "destination_type": "queue",
       "routing_key": "#",
       "arguments": {}
