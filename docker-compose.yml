@@ -3,8 +3,8 @@ version: '3'
 services:
   rmq0-hen: &rmq-hen
     build: rmq-hen
-    environment:
-      - LOG=debug
+      # environment:
+      # - LOG=debug
     hostname: rmq0-hen
   rmq1-hen:
     <<: *rmq-hen
@@ -12,6 +12,17 @@ services:
   rmq2-hen:
     <<: *rmq-hen
     hostname: rmq2-hen
+  rmq0-web: &rmq-web
+    build: rmq-web
+      # environment:
+      # - LOG=debug
+    hostname: rmq0-web
+  rmq1-web:
+    <<: *rmq-web
+    hostname: rmq1-web
+  rmq2-web:
+    <<: *rmq-web
+    hostname: rmq2-web
   haproxy-hen:
     image: haproxy:latest
     volumes:
@@ -23,4 +34,14 @@ services:
     ports:
       # HOST:CONTAINER
       - 15672:15672
-      - 5672:5672
+  haproxy-web:
+    image: haproxy:latest
+    volumes:
+      - ./haproxy-web.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - rmq0-web
+      - rmq1-web
+      - rmq2-web
+    ports:
+      # HOST:CONTAINER
+      - 15673:15672
