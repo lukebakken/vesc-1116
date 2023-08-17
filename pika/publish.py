@@ -15,9 +15,11 @@ parser = argparse.ArgumentParser(
     prog="consume.py", description="consume from inventory-fed"
 )
 parser.add_argument("-i", "--interval", default="1", type=int)
+parser.add_argument("-c", "--msgcount", default="100000", type=int)
 parser.add_argument("-p", "--port", default="5672", type=int)
 ns = parser.parse_args()
 pub_interval = ns.interval
+msg_count = ns.msg_count
 rmq_port = ns.port
 
 credentials = pika.PlainCredentials("guest", "guest")
@@ -43,6 +45,9 @@ while True:
             logger.info("publishing message %d: %s", c, b)
         channel.basic_publish(exchange="inventory", routing_key="is-inventory", body=b)
         connection.process_data_events(time_limit=pub_interval)
+        if c >= msg_count:
+            logger.info("done publishing! %d", c)
+            break
         c += 1
     except KeyboardInterrupt:
         break
