@@ -19,7 +19,7 @@ parser.add_argument("-c", "--msgcount", default="100000", type=int)
 parser.add_argument("-p", "--port", default="5672", type=int)
 ns = parser.parse_args()
 pub_interval = ns.interval
-msg_count = ns.msg_count
+msg_count = ns.msgcount
 rmq_port = ns.port
 
 credentials = pika.PlainCredentials("guest", "guest")
