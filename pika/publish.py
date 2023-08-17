@@ -11,8 +11,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 parser = argparse.ArgumentParser(prog='consume.py', description='consume from inventory-fed')
+parser.add_argument('-i', '--interval', default='1', type=int)
 parser.add_argument('-p', '--port', default='5672', type=int)
 ns = parser.parse_args()
+pub_interval = ns.interval
 rmq_port = ns.port
 
 credentials = pika.PlainCredentials("guest", "guest")
@@ -31,10 +33,10 @@ while True:
     try:
         d = datetime.datetime.now()
         b = d.isoformat()
-        if c % 1000 == 0:
+        if pub_interval > 0 or c % 1000 == 0:
             logger.info("publishing message %d: %s", c, b)
         channel.basic_publish(exchange="inventory", routing_key="is-inventory", body=b)
-        connection.process_data_events()
+        connection.process_data_events(time_limit=pub_interval)
         c += 1
     except KeyboardInterrupt:
         break
