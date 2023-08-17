@@ -6,7 +6,7 @@ clean: down
 	docker compose rm
 
 down:
-	docker compose down
+	docker compose down --volumes
 
 import:
 	/bin/sh $(CURDIR)/import-defs.sh

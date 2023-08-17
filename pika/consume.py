@@ -5,8 +5,9 @@ import argparse
 import logging
 import pika
 
-logging.basicConfig(level=logging.INFO)
-
+log_fmt = "%(asctime)s.%(msecs)03d %(levelname)s %(message)s"
+log_date_fmt = "%Y-%m-%d %H:%M:%S"
+logging.basicConfig(level=logging.INFO, format=log_fmt, datefmt=log_date_fmt)
 logger = logging.getLogger()
 
 parser = argparse.ArgumentParser(
