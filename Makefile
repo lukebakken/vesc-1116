@@ -12,8 +12,10 @@ import:
 	/bin/sh $(CURDIR)/import-defs.sh
 
 up:
-	# NB: fresh stuffs
-	# docker compose build --no-cache --pull --build-arg RABBITMQ_DOCKER_TAG=$(RABBITMQ_DOCKER_TAG)
-	# docker compose up --pull always
+ifdef $(DOCKER_FRESH)
+	docker compose build --no-cache --pull --build-arg RABBITMQ_DOCKER_TAG=$(RABBITMQ_DOCKER_TAG)
+	docker compose up --pull always
+else
 	docker compose build --build-arg RABBITMQ_DOCKER_TAG=$(RABBITMQ_DOCKER_TAG)
 	docker compose up
+endif
