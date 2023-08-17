@@ -39,18 +39,6 @@
       "vhost": "/",
       "component": "federation-upstream",
       "name": "fed-henrietta"
-    },
-    {
-      "value": {
-        "max-hops": 1,
-        "prefetch-count": 200,
-        "reconnect-delay": 10,
-        "trust-user-id": true,
-        "uri": "amqp://haproxy-wdc:5672/%2F?heartbeat=45&connection_timeout=15000"
-      },
-      "vhost": "/",
-      "component": "federation-upstream",
-      "name": "fed-webster"
     }
   ],
   "global_parameters": [

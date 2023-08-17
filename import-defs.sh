@@ -2,7 +2,7 @@
 
 set -e
 
-for SVC in rmq0-hdc rmq0-wdc rmq0-odc
+for SVC in rmq0-hdc rmq0-odc
 do
     # NB: https://github.com/docker/compose/issues/1262
     container_id="$(docker compose ps -q "$SVC")"
