@@ -40,6 +40,7 @@ services:
     ports:
       # HOST:CONTAINER
       - 15672:15672
+      - 5672:5672
   haproxy-wdc:
     image: haproxy:latest
     hostname: haproxy-wdc
@@ -52,6 +53,7 @@ services:
     ports:
       # HOST:CONTAINER
       - 15673:15672
+      - 5673:5672
   haproxy-odc:
     image: haproxy:latest
     hostname: haproxy-odc
@@ -64,3 +66,4 @@ services:
     ports:
       # HOST:CONTAINER
       - 15674:15672
+      - 5674:5672
