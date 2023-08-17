@@ -26,7 +26,7 @@ credentials = pika.PlainCredentials("guest", "guest")
 parameters = pika.ConnectionParameters(
     host="localhost",
     port=rmq_port,
-    virtual_host="is-inventory",
+    virtual_host="/",
     credentials=credentials,
 )
 connection = pika.BlockingConnection(parameters)
@@ -43,7 +43,7 @@ while True:
         b = d.isoformat()
         if pub_interval > 0 or c % 5000 == 0:
             logger.info("publishing message %d: %s", c, b)
-        channel.basic_publish(exchange="inventory", routing_key="is-inventory", body=b)
+        channel.basic_publish(exchange="inventory", routing_key="/", body=b)
         connection.process_data_events(time_limit=pub_interval)
         if c >= msg_count:
             logger.info("done publishing! %d", c)

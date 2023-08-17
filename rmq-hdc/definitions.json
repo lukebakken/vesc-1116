@@ -4,35 +4,16 @@
   "product_name": "RabbitMQ",
   "product_version": "3.11.19",
   "users": [
-    {
-      "name": "guest",
-      "password_hash": "ftlu5CRbqi8FENPZhvXwfOYfJqNgJ0T5Q/63B95CnJlVGW2l",
-      "hashing_algorithm": "rabbit_password_hashing_sha256",
-      "tags": [
-        "administrator"
-      ],
-      "limits": {}
-    }
   ],
   "vhosts": [
     {
       "name": "/"
-    },
-    {
-      "name": "is-inventory"
     }
   ],
   "permissions": [
     {
       "user": "guest",
       "vhost": "/",
-      "configure": ".*",
-      "write": ".*",
-      "read": ".*"
-    },
-    {
-      "user": "guest",
-      "vhost": "is-inventory",
       "configure": ".*",
       "write": ".*",
       "read": ".*"
@@ -46,9 +27,9 @@
         "prefetch-count": 200,
         "reconnect-delay": 10,
         "trust-user-id": true,
-        "uri": "amqp://haproxy-wdc:5672/is-inventory?heartbeat=45&connection_timeout=15000"
+        "uri": "amqp://haproxy-wdc:5672/%2F?heartbeat=45&connection_timeout=15000"
       },
-      "vhost": "is-inventory",
+      "vhost": "/",
       "component": "federation-upstream",
       "name": "fed-webster"
     },
@@ -58,9 +39,9 @@
         "prefetch-count": 200,
         "reconnect-delay": 10,
         "trust-user-id": true,
-        "uri": "amqp://haproxy-odc:5672/is-inventory?heartbeat=45&connection_timeout=15000"
+        "uri": "amqp://haproxy-odc:5672/%2F?heartbeat=45&connection_timeout=15000"
       },
-      "vhost": "is-inventory",
+      "vhost": "/",
       "component": "federation-upstream",
       "name": "fed-omaha"
     }
@@ -69,7 +50,7 @@
   ],
   "policies": [
     {
-      "vhost": "is-inventory",
+      "vhost": "/",
       "name": "quorumfedqueues",
       "pattern": ".*-fed$",
       "apply-to": "queues",
@@ -85,7 +66,7 @@
   "queues": [
     {
       "name": "inventory-fed",
-      "vhost": "is-inventory",
+      "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
@@ -96,7 +77,7 @@
     },
     {
       "name": "inventory-dlq",
-      "vhost": "is-inventory",
+      "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
@@ -109,7 +90,7 @@
   "exchanges": [
     {
       "name": "inventory",
-      "vhost": "is-inventory",
+      "vhost": "/",
       "type": "topic",
       "durable": true,
       "auto_delete": false,
@@ -118,7 +99,7 @@
     },
     {
       "name": "inventory-dlq",
-      "vhost": "is-inventory",
+      "vhost": "/",
       "type": "topic",
       "durable": true,
       "auto_delete": false,
@@ -129,7 +110,7 @@
   "bindings": [
     {
       "source": "inventory",
-      "vhost": "is-inventory",
+      "vhost": "/",
       "destination": "inventory-fed",
       "destination_type": "queue",
       "routing_key": "#",
@@ -137,7 +118,7 @@
     },
     {
       "source": "inventory-dlq",
-      "vhost": "is-inventory",
+      "vhost": "/",
       "destination": "inventory-dlq",
       "destination_type": "queue",
       "routing_key": "#",

@@ -21,7 +21,7 @@ credentials = pika.PlainCredentials("guest", "guest")
 parameters = pika.ConnectionParameters(
     host="localhost",
     port=rmq_port,
-    virtual_host="is-inventory",
+    virtual_host="/",
     credentials=credentials,
 )
 connection = pika.BlockingConnection(parameters)
