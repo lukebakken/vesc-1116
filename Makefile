@@ -1,6 +1,6 @@
 .PHONY: clean down import up
 
-RABBITMQ_DOCKER_TAG ?= 3.11.19-management
+RABBITMQ_DOCKER_TAG ?= 3-management
 
 clean: down
 	docker compose rm
@@ -12,7 +12,7 @@ import:
 	/bin/sh $(CURDIR)/import-defs.sh
 
 up:
-ifdef $(DOCKER_FRESH)
+ifdef DOCKER_FRESH
 	docker compose build --no-cache --pull --build-arg RABBITMQ_DOCKER_TAG=$(RABBITMQ_DOCKER_TAG)
 	docker compose up --pull always
 else
