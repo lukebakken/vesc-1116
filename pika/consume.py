@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO, format=log_fmt, datefmt=log_date_fmt)
 logger = logging.getLogger()
 
 parser = argparse.ArgumentParser(
-    prog="consume.py", description="consume from inventory-fed"
+    prog="consume.py", description="consume from inventory in hdc cluster"
 )
 parser.add_argument("-p", "--port", default="5672", type=int)
 ns = parser.parse_args()
@@ -31,12 +31,11 @@ channel.basic_qos(prefetch_count=1)
 
 def on_message(ch, method_frame, _header_frame, body):
     delivery_tag = method_frame.delivery_tag
-    if delivery_tag % 1000 == 0:
-        logger.info("consumed message: %d %s", delivery_tag, body)
+    logger.info("consumed message: %d %s", delivery_tag, body)
     ch.basic_ack(delivery_tag)
 
 
-channel.basic_consume(on_message_callback=on_message, queue="inventory-fed")
+channel.basic_consume(on_message_callback=on_message, queue="inventory")
 
 try:
     channel.start_consuming()

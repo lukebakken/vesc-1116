@@ -4,6 +4,15 @@
   "product_name": "RabbitMQ",
   "product_version": "3.11.19",
   "users": [
+    {
+      "name": "guest",
+      "password_hash": "cd3Mjsanssm//brluOdFkZZvHUEfIB3n10K66at1O8XT7rlB",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": [
+        "administrator"
+      ],
+      "limits": {}
+    }
   ],
   "vhosts": [
     {

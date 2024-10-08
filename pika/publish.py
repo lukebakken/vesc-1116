@@ -12,11 +12,11 @@ logging.basicConfig(level=logging.INFO, format=log_fmt, datefmt=log_date_fmt)
 logger = logging.getLogger()
 
 parser = argparse.ArgumentParser(
-    prog="consume.py", description="consume from inventory-fed"
+    prog="publish.py", description="publish to inventory-fed in odc cluster"
 )
-parser.add_argument("-i", "--interval", default="1", type=int)
+parser.add_argument("-i", "--interval", default="5", type=int)
 parser.add_argument("-c", "--msgcount", default="100000", type=int)
-parser.add_argument("-p", "--port", default="5672", type=int)
+parser.add_argument("-p", "--port", default="5673", type=int)
 ns = parser.parse_args()
 pub_interval = ns.interval
 msg_count = ns.msgcount
@@ -43,7 +43,7 @@ while True:
         b = d.isoformat()
         if pub_interval > 0 or c % 5000 == 0:
             logger.info("publishing message %d: %s", c, b)
-        channel.basic_publish(exchange="inventory", routing_key="/", body=b)
+        channel.basic_publish(exchange="inventory-fed", routing_key="inventory", body=b)
         connection.process_data_events(time_limit=pub_interval)
         if c >= msg_count:
             logger.info("done publishing! %d", c)
