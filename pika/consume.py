@@ -21,7 +21,7 @@ credentials = pika.PlainCredentials("guest", "guest")
 parameters = pika.ConnectionParameters(
     host="localhost",
     port=rmq_port,
-    virtual_host="/",
+    virtual_host="VISECA",
     credentials=credentials,
 )
 connection = pika.BlockingConnection(parameters)
@@ -35,7 +35,7 @@ def on_message(ch, method_frame, _header_frame, body):
     ch.basic_ack(delivery_tag)
 
 
-channel.basic_consume(on_message_callback=on_message, queue="inventory")
+channel.basic_consume(on_message_callback=on_message, queue="_Statement.CustomerNotification.v1")
 
 try:
     channel.start_consuming()

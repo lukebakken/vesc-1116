@@ -16,7 +16,22 @@
   ],
   "vhosts": [
     {
-      "name": "/"
+      "name": "/",
+      "description": "Default virtual host",
+      "tags": [],
+      "metadata": {
+        "description": "Default virtual host",
+        "tags": []
+      }
+    },
+    {
+      "name": "VISECA",
+      "description": "",
+      "tags": [],
+      "metadata": {
+        "description": "",
+        "tags": []
+      }
     }
   ],
   "permissions": [
@@ -26,22 +41,25 @@
       "configure": ".*",
       "write": ".*",
       "read": ".*"
+    },
+    {
+      "user": "guest",
+      "vhost": "VISECA",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
     }
   ],
-  "topic_permissions": [],
-  "parameters": [
+  "topic_permissions": [
     {
-      "value": {
-        "max-hops": 1,
-        "prefetch-count": 200,
-        "reconnect-delay": 10,
-        "trust-user-id": true,
-        "uri": "amqp://haproxy-hdc:5672/%2F?heartbeat=45&connection_timeout=15000"
-      },
-      "vhost": "/",
-      "component": "federation-upstream",
-      "name": "fed-hdc"
+      "user": "guest",
+      "vhost": "VISECA",
+      "exchange": ".*",
+      "write": ".*",
+      "read": ".*"
     }
+  ],
+  "parameters": [
   ],
   "global_parameters": [
   ],

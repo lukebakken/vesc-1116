@@ -1,8 +1,8 @@
 {
-  "rabbit_version": "3.11.19",
-  "rabbitmq_version": "3.11.19",
+  "rabbit_version": "3.13.6",
+  "rabbitmq_version": "3.13.6",
   "product_name": "RabbitMQ",
-  "product_version": "3.11.19",
+  "product_version": "3.13.6",
   "users": [
     {
       "name": "guest",
@@ -10,13 +10,28 @@
       "hashing_algorithm": "rabbit_password_hashing_sha256",
       "tags": [
         "administrator"
-      ],
-      "limits": {}
+        ],
+        "limits": {}
     }
   ],
   "vhosts": [
     {
-      "name": "/"
+      "name": "/",
+      "description": "Default virtual host",
+      "tags": [],
+      "metadata": {
+        "description": "Default virtual host",
+        "tags": []
+      }
+    },
+    {
+      "name": "VISECA",
+      "description": "",
+      "tags": [],
+      "metadata": {
+        "description": "",
+        "tags": []
+      }
     }
   ],
   "permissions": [
@@ -26,53 +41,140 @@
       "configure": ".*",
       "write": ".*",
       "read": ".*"
+    },
+    {
+      "user": "guest",
+      "vhost": "VISECA",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
     }
   ],
-  "topic_permissions": [],
+  "topic_permissions": [
+    {
+      "user": "guest",
+      "vhost": "VISECA",
+      "exchange": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
   "parameters": [
     {
+      "value": [
+        {
+          "upstream": "ulxxrzvrmqapp01"
+        },
+        {
+          "upstream": "ulxxrzvrmqapp02"
+        },
+        {
+          "upstream": "ulxxrzvrmqapp03"
+        }
+      ],
+      "vhost": "VISECA",
+      "component": "federation-upstream-set",
+      "name": "zh"
+    },
+    {
       "value": {
-        "max-hops": 1,
-        "prefetch-count": 200,
-        "reconnect-delay": 10,
-        "trust-user-id": true,
-        "uri": "amqp://haproxy-odc:5672/%2F?heartbeat=45&connection_timeout=15000"
+        "prefetch-count": 1000,
+        "uri": "amqp://haproxy-odc:5672/VISECA?heartbeat=45&connection_timeout=15000"
       },
-      "vhost": "/",
+      "vhost": "VISECA",
       "component": "federation-upstream",
-      "name": "fed-odc"
+      "name": "origin"
+    },
+    {
+      "value": [
+        {
+          "upstream": "ulxxrzvrmqapp01"
+        },
+        {
+          "upstream": "ulxxrzvrmqapp02"
+        },
+        {
+          "upstream": "ulxxrzvrmqapp03"
+        }
+      ],
+      "vhost": "VISECA",
+      "component": "federation-upstream-set",
+      "name": "origin"
     }
   ],
   "global_parameters": [
   ],
   "policies": [
     {
-      "vhost": "/",
-      "name": "fed-exchanges",
-      "pattern": ".*-fed$",
+      "vhost": "VISECA",
+      "name": "ha-all",
+      "pattern": ".*",
+      "apply-to": "all",
+      "definition": {
+        "ha-mode": "all",
+        "ha-sync-mode": "automatic"
+      },
+      "priority": 0
+    },
+    {
+      "vhost": "VISECA",
+      "name": "ha-all_ttl",
+      "pattern": ".*",
+      "apply-to": "queues",
+      "definition": {
+        "ha-mode": "all",
+        "ha-sync-mode": "automatic",
+        "message-ttl": 86400000
+      },
+      "priority": 1
+    },
+    {
+      "vhost": "VISECA",
+      "name": "x-federation",
+      "pattern": "^Statement.Notification.v1$",
       "apply-to": "exchanges",
       "definition": {
-        "federation-upstream-set": "all"
+        "federation-upstream-set": "all",
+        "ha-mode": "all",
+        "ha-sync-mode": "automatic"
       },
-      "priority": 25
+      "priority": 10
     }
   ],
   "queues": [
     {
-      "name": "inventory",
-      "vhost": "/",
+      "name": "_Statement.CustomerNotification.v1",
+      "vhost": "VISECA",
       "durable": true,
       "auto_delete": false,
       "arguments": {
-        "x-queue-type": "quorum"
+        "x-queue-type": "classic"
+      }
+    },
+    {
+      "name": "_Statement.History.EBPP.v1",
+      "vhost": "VISECA",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "classic"
+      }
+    },
+    {
+      "name": "_Statement.EBPP.v1",
+      "vhost": "VISECA",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "classic"
       }
     }
   ],
   "exchanges": [
     {
-      "name": "inventory-fed",
-      "vhost": "/",
-      "type": "fanout",
+      "name": "Statement.Notification.v1",
+      "vhost": "VISECA",
+      "type": "topic",
       "durable": true,
       "auto_delete": false,
       "internal": false,
@@ -81,11 +183,27 @@
   ],
   "bindings": [
     {
-      "source": "inventory-fed",
-      "vhost": "/",
-      "destination": "inventory",
+      "source": "Statement.Notification.v1",
+      "vhost": "VISECA",
+      "destination": "_Statement.CustomerNotification.v1",
       "destination_type": "queue",
       "routing_key": "#",
+      "arguments": {}
+    },
+    {
+      "source": "Statement.Notification.v1",
+      "vhost": "VISECA",
+      "destination": "_Statement.EBPP.v1",
+      "destination_type": "queue",
+      "routing_key": "EBPP",
+      "arguments": {}
+    },
+    {
+      "source": "Statement.Notification.v1",
+      "vhost": "VISECA",
+      "destination": "_Statement.History.EBPP.v1",
+      "destination_type": "queue",
+      "routing_key": "EBPP",
       "arguments": {}
     }
   ]
